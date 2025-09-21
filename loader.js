@@ -23,11 +23,11 @@ export async function main(ns) {
   const logDir = "/logs/";
 
   // -------------------------
-  // Target prioritization
+  // Target prioritization weights
   // -------------------------
   const moneyWeight = 0.8;
   const securityWeight = 1.2;
-  const growBias = 50; // <— increase this to lean harder toward grow
+  const growBias = 50; // increase to lean harder toward grow
 
   // -------------------------
   // Parse args / flags
@@ -39,6 +39,7 @@ export async function main(ns) {
     return (i >= 0 && i < args.length - 1) ? args[i + 1] : null;
   };
 
+  // Optional flags
   const debug = hasFlag("--debug");
   const doNuke = hasFlag("--nuke");
   const doDoors = hasFlag("--doors");
@@ -47,6 +48,7 @@ export async function main(ns) {
   const forceCopy = hasFlag("--force-copy");
   const chaos = hasFlag("--chaos");
   const multi = hasFlag("--multi");
+  const doLogs = hasFlag("--logs"); // <---- NEW FLAG: enable detailed logging
   const reservedRam = Number(getFlagArg("--reserve")) || reservedRamDefault;
   const targetArg = getFlagArg("--target");
   const multiCountArg = Number(getFlagArg("--multi")) || null;
@@ -54,11 +56,13 @@ export async function main(ns) {
   // -------------------------
   // Logging helpers
   // -------------------------
+  // debug prints only if --debug
   const log = (...m) => { if (debug) ns.tprint("[loader] " + m.join(" ")); };
-  const info = (...m) => ns.print("[loader] " + m.join(" "));
+  // info prints if --logs is set
+  const info = (...m) => { if (doLogs) ns.print("[loader] " + m.join(" ")); };
 
   // -------------------------
-  // Helper: scan all servers recursively
+  // Recursive scan of all servers
   // -------------------------
   function scanAll() {
     const seen = new Set([HOME]);
@@ -69,13 +73,13 @@ export async function main(ns) {
         for (const n of ns.scan(cur)) {
           if (!seen.has(n)) { seen.add(n); q.push(n); }
         }
-      } catch { }
+      } catch { /* ignore scan errors */ }
     }
     return [...seen];
   }
 
   // -------------------------
-  // classify servers
+  // Classify servers into targets & workers
   // -------------------------
   function classifyServers(all) {
     const targets = [], workers = [];
@@ -102,14 +106,12 @@ export async function main(ns) {
         isHome: s === HOME
       });
     }
-    if (debug) {
-      log("Classified", targets.length, "targets and", workers.length, "workers");
-    }
+    if (debug) log("Classified", targets.length, "targets and", workers.length, "workers");
     return { targets, workers };
   }
 
   // -------------------------
-  // rank targets
+  // Rank targets by money/sec ratio
   // -------------------------
   function rankTargets(targets) {
     return targets
@@ -121,18 +123,19 @@ export async function main(ns) {
   }
 
   // -------------------------
-  // deploy worker script
+  // Deploy worker script to server
   // -------------------------
   async function deployWorkerScriptTo(w) {
     try {
       if (!ns.fileExists(workerScript, w.host) || forceCopy) {
         await ns.scp(workerScript, w.host, HOME);
+        if (doLogs) info(`Copied ${workerScript} to ${w.host}`);
       }
     } catch (e) { info(`scp error to ${w.host}: ${e}`); }
   }
 
   // -------------------------
-  // threadsForWorker with debug
+  // Calculate available threads on a worker
   // -------------------------
   function threadsForWorker(w) {
     const ramPerThread = ns.getScriptRam(workerScript);
@@ -149,7 +152,7 @@ export async function main(ns) {
   }
 
   // -------------------------
-  // kill worker scripts
+  // Kill running worker scripts
   // -------------------------
   function killWorkerScriptsOn(host) {
     for (const p of ns.ps(host)) {
@@ -158,41 +161,37 @@ export async function main(ns) {
   }
 
   // -------------------------
-  // consolidate logs
+  // Consolidate worker logs (optional)
   // -------------------------
-  `function consolidateWorkerLogs() {
+  function consolidateWorkerLogs() {
+    if (!doLogs) return; // skip if --logs not set
     try {
       const files = ns.ls(HOME, ".txt").filter(f => f.startsWith("worker-"));
       for (const f of files) {
         const c = ns.read(f);
-        if (c) ns.write(``${logDir}worker-summary.txt``, c, "a");
-        ns.write(f, "", "w");
+        if (c) ns.write(`${logDir}worker-summary.txt`, c, "a");
+        ns.write(f, "", "w"); // clear file after merging
       }
     } catch (e) { ns.print("log merge error: " + e); }
-  }`
+  }
 
   // -------------------------
-  // batch ratio (bias to grow)
+  // Calculate batch ratio (weaken:hack:grow)
   // -------------------------
   function calculateBatchRatio(t) {
     const secDelta = Math.max(0, t.sec - t.minSec);
     const moneyRatio = t.maxMoney > 0 ? t.curMoney / t.maxMoney : 0;
 
-    // Weigh security
     const weaken = Math.max(1, Math.ceil(secDelta * 3 * securityWeight));
-
-    // Reduce hack impact: only hack when >70% full
     const hackFactor = moneyRatio > 0.7 ? (moneyRatio - 0.7) / 0.3 : 0;
     const hack = Math.max(1, Math.ceil(hackFactor * 5 * moneyWeight));
-
-    // Aggressively grow when money is missing
     const grow = Math.max(1, Math.ceil((1 - moneyRatio) * growBias * moneyWeight));
 
     return { weaken, hack, grow };
   }
 
   // -------------------------
-  // target weight
+  // Compute target weight for thread distribution
   // -------------------------
   const targetWeight = t => {
     const moneyFrac = t.curMoney / t.maxMoney;
@@ -201,15 +200,13 @@ export async function main(ns) {
   };
 
   // -------------------------
-  // buildThreadPlan with debug
+  // Build thread plan across targets
   // -------------------------
   function buildThreadPlan(workers, targets) {
     const totalThreads = workers.reduce((s, w) => s + threadsForWorker(w), 0);
     const weights = targets.map(targetWeight);
     const totalW = weights.reduce((a, b) => a + b, 0);
-    if (debug) {
-      log("buildThreadPlan totalThreads=", totalThreads, "totalW=", totalW, "weights=", JSON.stringify(weights));
-    }
+    if (debug) log("buildThreadPlan totalThreads=", totalThreads, "totalW=", totalW, "weights=", JSON.stringify(weights));
     return targets.map((t, i) => ({
       target: t,
       want: totalThreads * (totalW ? (weights[i] / totalW) : 0),
@@ -218,7 +215,7 @@ export async function main(ns) {
   }
 
   // -------------------------
-  // next target
+  // Pick next target for assignment
   // -------------------------
   function takeNextTarget(plan) {
     let best = null;
@@ -229,82 +226,83 @@ export async function main(ns) {
   }
 
   // -------------------------
-  // Optional scripts
+  // Optional script execution
   // -------------------------
   if (doUpgrade && !ns.isRunning(upgradesScript, HOME)) ns.exec(upgradesScript, HOME, 1);
   if (doBmNotify && !ns.isRunning(bmNotifyScript, HOME)) ns.exec(bmNotifyScript, HOME, 1);
   if (doNuke && ns.fileExists(meganukeScript, HOME)) { ns.exec(meganukeScript, HOME, 1); await ns.sleep(200); }
   if (doDoors && ns.fileExists(doorsScript, HOME) && !ns.isRunning(doorsScript, HOME)) ns.exec(doorsScript, HOME, 1);
 
-// -------------------------
-// Main loop
-// -------------------------
-for (;;) {                       // “endless for” is cleaner than while(true)
-  try {
-    const all = scanAll();
-    const { targets, workers } = classifyServers(all);
-    let ranked = rankTargets(targets);
-    if (chaos) ranked = ranked.sort(() => Math.random() - 0.5);
+  // -------------------------
+  // Main loop
+  // -------------------------
+  for (; ;) {
+    try {
+      const all = scanAll();
+      const { targets, workers } = classifyServers(all);
+      let ranked = rankTargets(targets);
+      if (chaos) ranked = ranked.sort(() => Math.random() - 0.5);
 
-    let chosen = [];
-    if (targetArg) {
-      for (const n of targetArg.split(",").map(s => s.trim())) {
-        const f = targets.find(t => t.host === n);
-        if (f) chosen.push(f);
+      let chosen = [];
+      if (targetArg) {
+        for (const n of targetArg.split(",").map(s => s.trim())) {
+          const f = targets.find(t => t.host === n);
+          if (f) chosen.push(f);
+        }
       }
-    }
-    if (!chosen.length) {
-      if (multi) {
-        const cnt = Math.min(multiCountArg || Math.ceil(workers.length / 3), ranked.length);
-        chosen = ranked.slice(0, cnt);
-      } else if (ranked.length) {
-        chosen = [ranked[0]];
+      if (!chosen.length) {
+        if (multi) {
+          const cnt = Math.min(multiCountArg || Math.ceil(workers.length / 3), ranked.length);
+          chosen = ranked.slice(0, cnt);
+        } else if (ranked.length) {
+          chosen = [ranked[0]];
+        }
       }
-    }
 
-    const plan = buildThreadPlan(workers, chosen);
+      const plan = buildThreadPlan(workers, chosen);
 
-    for (const w of workers.sort((a, b) => b.maxRam - a.maxRam)) {
-      await deployWorkerScriptTo(w);
-      killWorkerScriptsOn(w.host);
+      for (const w of workers.sort((a, b) => b.maxRam - a.maxRam)) {
+        await deployWorkerScriptTo(w);
+        killWorkerScriptsOn(w.host);
 
-      let availableThreads = threadsForWorker(w);
-      if (debug) log(`Available threads on ${w.host}:`, availableThreads);
-      if (availableThreads <= 0) continue;
+        let availableThreads = threadsForWorker(w);
+        if (debug) log(`Available threads on ${w.host}:`, availableThreads);
+        if (availableThreads <= 0) continue;
 
-      while (availableThreads > 0) {
-        const p = takeNextTarget(plan);
-        if (!p) break;
+        while (availableThreads > 0) {
+          const p = takeNextTarget(plan);
+          if (!p) break;
 
-        const raw = p.want - p.used;
-        const threadsToAssign = Math.min(Math.ceil(raw), availableThreads);
-        if (isNaN(threadsToAssign) || threadsToAssign <= 0) break;
+          const raw = p.want - p.used;
+          const threadsToAssign = Math.min(Math.ceil(raw), availableThreads);
+          if (isNaN(threadsToAssign) || threadsToAssign <= 0) break;
 
-        p.used += threadsToAssign;
-        availableThreads -= threadsToAssign;
+          p.used += threadsToAssign;
+          availableThreads -= threadsToAssign;
 
-        const ratio = calculateBatchRatio(p.target);
-        const execArgs = [
-          "--targets", p.target.host,
-          "--threads", String(threadsToAssign),
-          "--ratio", `${ratio.weaken}:${ratio.hack}:${ratio.grow}`,
-          "--workerHost", w.host,
-          "--logDir", logDir
-        ];
-        if (debug) execArgs.push("--debug");
-        if (chaos) execArgs.push("--chaos");
-        if (multi) execArgs.push("--multi");
-        execArgs.push("--offset", String(Math.floor(Math.random() * 500)));
+          const ratio = calculateBatchRatio(p.target);
+          const execArgs = [
+            "--targets", p.target.host,
+            "--threads", String(threadsToAssign),
+            "--ratio", `${ratio.weaken}:${ratio.hack}:${ratio.grow}`,
+            "--workerHost", w.host,
+            "--logDir", logDir
+          ];
+          if (debug) execArgs.push("--debug");
+          if (chaos) execArgs.push("--chaos");
+          if (multi) execArgs.push("--multi");
+          execArgs.push("--offset", String(Math.floor(Math.random() * 500)));
 
-        const pid = ns.exec(workerScript, w.host, Math.max(1, threadsToAssign), ...execArgs);
-        if (pid === 0) info(`failed to start worker on ${w.host} for ${p.target.host}`);
-        else info(`Started ${workerScript} on ${w.host} for ${p.target.host} threads=${threadsToAssign}`);
+          const pid = ns.exec(workerScript, w.host, Math.max(1, threadsToAssign), ...execArgs);
+          if (pid === 0) info(`failed to start worker on ${w.host} for ${p.target.host}`);
+          else info(`Started ${workerScript} on ${w.host} for ${p.target.host} threads=${threadsToAssign}`);
+        }
       }
+
+      consolidateWorkerLogs();
+    } catch (e) {
+      ns.print("loader error: " + e);
     }
-    consolidateWorkerLogs();
-  } catch (e) {
-    ns.print("loader error: " + e);
+    await ns.sleep(10_000); // reduce CPU load
   }
-  await ns.sleep(10_000);        // keeps CPU load low and yields control
-}
 }
