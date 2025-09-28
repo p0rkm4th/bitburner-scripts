@@ -16,9 +16,9 @@ Here lies the result of **blindly following AI advice** while trying to automate
 
 ## 🧩 What’s in here?
 - `loader.js` / `worker.js`: Dynamic hack/grow/weaken cycles.  
-- `meganuke.js`: Opens all ports, nukes everything. Probably overkill.  
-- `doors.js`: Backdoors everything I could reach.  
-- `upgrade.js`: Spends money like it grows on trees.  
+- `/cmd/meganuke.js`: Opens all ports, nukes everything. Probably overkill.  
+- `/cmd/domBackdoor.js`: Backdoors everything automatically through a DOM glitch (Stay nterminal screen while running!).  
+- `/cmd/upgrade.js`: Spends money like it grows on trees.  
 - **And more scripts I wrote while the AI applauded.**  
 
 ---
