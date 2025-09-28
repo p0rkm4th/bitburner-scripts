@@ -1,0 +1,222 @@
+==================================================================================
+The World
+[S=Sector-12;A=Aevum;V=Volhaven;C=Chongqing;N=New Tokyo;I=Ishima]
+
+               ,_   .  ._. _.  .
+           , _-\','|~\~      ~/      ;-'_   _-'     ,;_;_,    ~~-
+  /~~-\_/-'~'--' \~~| ',    ,'      /  / ~|-_\_/~/~      ~~--~~~~'--_
+  /              ,/'-/~ '\ ,' _  , 'V,'|~                   ._/-, /~
+  ~/-'~\_,       '-,| '|. '   ~  ,\ /'~                /    /_  /~
+.-~      '|        '',\~|\       _\~     ,_  ,     C         /,
+          '\     S  /'~          |_/~\\,-,~  \ "         ,_,/ |
+           |       /            ._-~'\_ _~|              \ ) N
+            \   __-\           '/      ~ |\  \_          /  ~
+  .,         '\ |,  ~-_      - |          \\_' ~|  /\  \~ ,
+               ~-_'  _;       '\           '-,   \,' /\/  |
+                 '\_,~'\_       \_ _,       /'    '  |, /|'
+                   /     \_       ~ |      /         \  ~'; -,_.
+                   |       ~\        |    |  ,        '-_, ,; ~ ~\
+                    \,   A  /        \    / /|            ,-, ,   -,
+                     |    ,/          |  |' |/          ,-   ~ \   '.
+                    ,|   ,/           \ ,/              \   I   |
+                    /    |             ~                 -~~-, /   _
+                    | ,-'                                    ~    /
+                    / ,'                                      ~
+                    ',|  ~
+                      ~'
+
+==================================================================================
+
+Sector-12
+
+          78                                                     o 97           
+          o                               [icarus microsystems] /               
+          G [powerhouse gym]  o                                C                
+    1     |                   |                               /                 
+    o-----+---x----o 4        T [alpha ent.]     o-------o   /                  
+          |   3     \         |                           \ /                 
+          |          \        |     [iron gym]             x 95                
+     (79) x           \       |                           / \                 
+          |            o-?----+----x----G--o 10          /   o----$--o          
+          |                   |    8        \        94 x                      
+       80 x       [city hall] |              x 11      /  [world stock exchange]
+          |                   |               \       /                        
+          |                   ? [cia]          \     /                         
+          H  [hospital]       |                 C   C [universal energy]        
+          |                   o      [deltaone]  \ /                           
+          |                          35 o---------x 13/92/36                    
+          C  [megacorp]  33            /         / \                           
+          |              o------------o 34      /   \                          
+ (29)     |             /    [carmichael sec.] C     \                         
+    o-----+-----x------o                      /       U [rothman university]    
+          |     31     32              [nsa] ?                                  
+          |                                 /                                   
+          C [blade industries]             C                                    
+          |                               / [four sigma]                        
+          |      [joe's guns]            /                                      
+          |                             /                                       
+       85 o--C--------C--------T-------o 88                [the slums] S        
+                                                                              
+          [foodnstuff]     [travel agency]                                      
+==================================================================================
+
+Aevum
+
+
+   [aevum police headquarters]       26                                         
+                                   o                                            
+           C                        \  [bachman & associates]                  
+            \  56                    C                                         
+             x                        \         [summit university]            
+              \                        \  28                                  
+               \ [snap fitness gym]     x       o--U-----------¢               
+                G                        \     /                               
+                 \                        \   T               [casino]        
+                  x 58                     \ /  [travel agency]                
+                   \         94     95      o                                  
+     90             x 59     o------o       |                                   
+                     \      /        \      |             98    102  103      
+      o--------H------x----o 93    96 o-----+------------o       o----o         
+                       \                    |             \     /             
+        [hospital]      \  61    [ecorp]    x 31        99 o-T-o 101           
+                         o                  |                                   
+                         |      o---T--     |            [fulcrum tech.]        
+                         x 62  /            C  [aerocorp]                       
+    [crush fitness gym]  |    /             |                                   
+                         |   /              |                                   
+         o--------G------+--o               o                                   
+                         |                  |\  [rho construction]             
+                         T [netlink tech.]  | C                                 
+                         |                  |  \                               
+                         |               34 x   \                              
+           [clarke inc.] C                  |    \    [world stock exchange]   
+                         |                  |     \                            
+                         |                  |      o-C-------$--------o         
+[galactic cybersystems]  C               35 x                                   
+                         |                      [watchdog security]             
+                         |                                                      
+                      67 o                                                      
+                                                                               
+                                    [the slums] S   
+==================================================================================
+
+Volhaven
+
+
+                                 [omnia cybersystems]                           
+                   17         66               68                               
+                  o            o------C-------o                                 
+                   \          /                \                              
+                    \        o 65               o 69                           
+      [syscore sec.] C       |                  |                               
+                      \      |                  |     [millenium fitness gym]  
+                       \     |  21 22   23  24  |     26                       
+                        o----+--x--x----x---x---+-----x-------G-----o           
+                      19     |                  |                   28          
+                             |                  T [omnitek inc.]                
+                  [hospital] H 63               o                               
+                             |                 / 72                             
+                   3         |    5     6     /                 9               
+                    o--------+----x-----x----+----------$-------o               
+                   /         |               |                                  
+                  /       61 x [helios labs] C    [world stock exchange]        
+ [travel agency] T           |               |                                  
+                /            |               o                                  
+               /             C [nwo]        / 75                                
+              /  [computek]  |             /                                    
+             /       T-------o------U-----o                                     
+          1 o                |            |                                     
+                             |    [zb]    o 77                                  
+                  [lexocorp] C                                                  
+                             |                                                  
+                             o                                                  
+                            57                                                  
+                        
+                                     [the slums] S
+==================================================================================
+
+Chongqing
+
+
+                                    |                                           
+                                 75 o                                           
+                                     \                                         
+                                      o 76                                      
+                            7 |       |                                         
+                              |       + 77                                      
+       [world stock exchange] $       |                                         
+                               \      o 78      [kuaigong international]       
+                                \    /                                         
+                         38 o----x--x------x------C------?--                    
+                           /    39  |      41             [church]  
+                       37 o         + 79    o--x--x-H-0                         
+                         /          |      /                                    
+                        /     x-----+-----x-----0   [hospital]                  
+[solaris space system] C            |                                           
+                       |            + 80                                        
+                       |            |                                           
+                    34 o            T [travel agency]                           
+                                    |                                           
+                                    |                                           
+                                    x 82                                        
+
+             [the slums] S                                                                                          
+==================================================================================
+
+New Tokyo
+
+                                                                                                                                                            
+                  o                                                             
+                   \                                                           
+          [arcade]  ?    [defcomm]                                             
+                     \                                                         
+                      o--x---?--x--o [travel agency]                            
+                      7  8     10   T                                           
+             [vitalife]              o 12   [global pharmaceuticals]            
+                                     |                                          
+               o--?-x----x-------x-?-+--------x--x-C-x---x-o                    
+                   21   22      23    \      24 25  26  27                     
+                                       \                                       
+                          [noodle bar]  x 14                                    
+                                         \                                     
+                                          \                                    
+                    [hospital]             o 15 [world stock exchange]          
+                                           |                                    
+                  o--x--H--x-----x-----x---+---x----x--$--x-o                   
+                                           |                                    
+                                           |                                    
+                                           o 17                                 
+                                                                                                                                                                                                                                            
+                                           S  [the slums]                       
+==================================================================================
+
+Ishima
+
+
+                                          o 59                                  
+                  o        o              |                                     
+ [storm tech.]    |        |              $ [world stock exchange]              
+                  |        |         28   |                                     
+     23 o--T------o--------+----x----o    |                                     
+       /         / 25      |   27     \   x 57                                 
+      /         /          |           \  |                                    
+     /         /           |            \ |                                    
+    o 22      o            |             \| 29/56                              
+              |            |              o                                     
+              | [hospital] H             / \      3       2      1             
+              o            |            /   \     o-------x------o             
+             /             o           /     \   /                             
+   48 o     /                      55 x       \ /                              
+       \   /                         /         x        [glitch]               
+        \ /         [nova medical]  /      4/30 \                             
+      49 x                         C             \        ?                    
+        / \                       /               \                           
+       /   \    [travel agency]  T                 o 31                        
+      /     \           51      /                                              
+     /       o----T------x-----o                                                
+    o      50                  52                                               
+              [omega soft.]                                                     
+
+                                       [the slums] S                                                                        
+==================================================================================
+
