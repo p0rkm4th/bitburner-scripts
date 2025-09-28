@@ -21,6 +21,8 @@ export async function main(ns) {
   const upgradesScript = "/upgrade.js";
   const bmNotifyScript = "/cmd/bm-notify.js";
   const logDir = "/logs/";
+  const customStats = "/cmd/custStats.js"
+  const stockTrader = "/stockTrader.js"
 
   // -------------------------
   // Target prioritization weights
@@ -45,6 +47,8 @@ export async function main(ns) {
   const doDoors = hasFlag("--doors");
   const doUpgrade = hasFlag("--upgrade");
   const doBmNotify = hasFlag("--bm-notify");
+  const doCustomStats = hasFlag("--stats");
+  const doStockTrader = hasFlag("--stock");
   const forceCopy = hasFlag("--force-copy");
   const chaos = hasFlag("--chaos");
   const multi = hasFlag("--multi");
@@ -230,6 +234,8 @@ export async function main(ns) {
   // -------------------------
   if (doUpgrade && !ns.isRunning(upgradesScript, HOME)) ns.exec(upgradesScript, HOME, 1);
   if (doBmNotify && !ns.isRunning(bmNotifyScript, HOME)) ns.exec(bmNotifyScript, HOME, 1);
+  if (doCustomStats && !ns.isRunning(customStats, HOME)) ns.exec(customStats, HOME, 1);
+  if (doStockTrader && !ns.isRunning(stockTrader, HOME)) ns.exec(stockTrader, HOME, 1);
   if (doNuke && ns.fileExists(meganukeScript, HOME)) { ns.exec(meganukeScript, HOME, 1); await ns.sleep(200); }
   if (doDoors && ns.fileExists(doorsScript, HOME) && !ns.isRunning(doorsScript, HOME)) ns.exec(doorsScript, HOME, 1);
 
