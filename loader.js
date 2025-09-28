@@ -17,7 +17,7 @@ export async function main(ns) {
   const reservedRamDefault = 8;
   const workerScript = "/worker.js";
   const meganukeScript = "/cmd/meganuke.js";
-  const doorsScript = "/cmd/domBackdoors.js";
+  const doorsScript = "/cmd/domBackdoor.js";
   const upgradesScript = "/upgrade.js";
   const bmNotifyScript = "/cmd/bm-notify.js";
   const logDir = "/logs/";
