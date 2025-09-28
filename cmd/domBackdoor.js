@@ -36,10 +36,7 @@ export async function main(ns) {
     "run4theh111z",
     "fulcrumassets",
     "powerhouse-fitness",
-    "CSEC",               // CyberSec / earlier
-    "foodnstuff",
-    "joesguns",
-    "n00dles"
+    "CSEC"               // CyberSec / earlier
     // Add or reorder servers as you want — any server names not present here will be processed later by distance.
   ];
 
