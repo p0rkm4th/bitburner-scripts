@@ -2,13 +2,11 @@
 export async function main(ns) {
   // Logging
   ns.disableLog('ALL');
-  ns.tail();
-
-  // Pulled from online steam guide about stock trading for dummies
+  ns.ui.openTail(ns.getScriptName(), ns.getHostname(), ...ns.args);
 
   // Globals
-  const scriptTimer = 30000; // Time script waits
-  const moneyKeep = 1000000000; // Failsafe Money
+  const scriptTimer = 10000; // Time script waits
+  const moneyKeep = 5000000000; // Failsafe Money
   //const moneyKeep = 1000000;
   const stockBuyOver_Long = 0.60; // Buy stocks when forecast is over this %
   const stockBuyUnder_Short = 0.40; // Buy shorts when forecast is under this %
@@ -28,13 +26,13 @@ export async function main(ns) {
 
 
   // Functions
-  // Use nFormat for values it can work with
+  // Use formatNumber for values it can work with
   function format(number) {
     if (Math.abs(number) < 1e-6) {
       number = 0;
     }
 
-    const answer = ns.nFormat(number, '$0.000a');;
+    const answer = ns.formatNumber(number, 3); // 3 decimal places
 
     if (answer === "NaN") {
       return `${number}`;
@@ -43,28 +41,23 @@ export async function main(ns) {
     return answer;
   }
 
-  // numeral.js doesn't properly format numbers that are too big or too small
-  // So, we will supply our own function for values over 't'
+  // formatNumber doesn't properly handle very large numbers (q+), so we add our own notation
   function formatReallyBigNumber(number) {
     if (number === Infinity) return "∞";
 
     // Format numbers q+ properly
     for (let i = 0; i < extraFormats.length; i++) {
       if (extraFormats[i] < number && number <= extraFormats[i] * 1000) {
-        return format(number / extraFormats[i], "0." + "0".repeat(decimalPlaces)) + extraNotations[i];
+        return format(number / extraFormats[i]) + extraNotations[i];
       }
     }
 
-    // Use nFormat for numbers it can format
+    // Use formatNumber for smaller values
     if (Math.abs(number) < 1000) {
-      return format(number, "0." + "0".repeat(decimalPlaces));
+      return ns.formatNumber(number, decimalPlaces);
     }
 
-    const str = format(number, "0." + "0".repeat(decimalPlaces) + "a");
-
-    if (str === "NaN") return format(number, "0." + " ".repeat(decimalPlaces) + "e+0");
-
-    return str;
+    return ns.formatNumber(number, decimalPlaces);
   }
 
   function buyPositions(stock) {
@@ -76,7 +69,6 @@ export async function main(ns) {
     let volatilityPercent = ns.stock.getVolatility(stock);
     let playerMoney = ns.getPlayer().money;
 
-
     // Look for Long Stocks to buy
     if (forecast >= stockBuyOver_Long && volatilityPercent <= stockVolatility) {
       if (playerMoney - moneyKeep > ns.stock.getPurchaseCost(stock, minSharePercent, "Long")) {
@@ -85,7 +77,6 @@ export async function main(ns) {
 
         if (boughtFor > 0) {
           let message = 'Bought ' + Math.round(shares) + ' Long shares of ' + stock + ' for ' + formatReallyBigNumber(boughtFor);
-
           ns.toast(message, 'success', toastDuration);
         }
       }
@@ -100,7 +91,6 @@ export async function main(ns) {
 
           if (boughtFor > 0) {
             let message = 'Bought ' + Math.round(shares) + ' Short shares of ' + stock + ' for ' + formatReallyBigNumber(boughtFor);
-
             ns.toast(message, 'success', toastDuration);
           }
         }
@@ -120,14 +110,13 @@ export async function main(ns) {
 
       // Output stock info & forecast
       ns.print(stock + ' 4S Forecast -> ' + (Math.round(forecast * 100) + '%   ' + forcastDisplay));
-      ns.print('      Position -> ' + ns.nFormat(position[0], '0.00a'));
-      ns.print('      Profit -> ' + ns.nFormat(profit, '$0.000a'));
+      ns.print('      Position -> ' + ns.formatNumber(position[0], 2));
+      ns.print('      Profit -> ' + ns.formatNumber(profit, 3));
 
       // Check if we need to sell Long stocks
       if (forecast < sellThreshold_Long) {
         let soldFor = ns.stock.sellStock(stock, position[0]);
-        let message = 'Sold ' + position[0] + ' Long shares of ' + stock + ' for ' + ns.nFormat(soldFor, '$0.000a');
-
+        let message = 'Sold ' + position[0] + ' Long shares of ' + stock + ' for ' + ns.formatNumber(soldFor, 3);
         ns.toast(message, 'success', toastDuration);
       }
     }
@@ -139,19 +128,19 @@ export async function main(ns) {
         // Check if we need to sell Short stocks
         if (forecast > sellThreshold_Short) {
           let soldFor = ns.stock.sellShort(stock, position[2]);
-          let message = 'Sold ' + stock + ' Short shares of ' + stock + ' for ' + ns.nFormat(soldFor, '$0.000a');
-
+          let message = 'Sold ' + position[2] + ' Short shares of ' + stock + ' for ' + ns.formatNumber(soldFor, 3);
           ns.toast(message, 'success', toastDuration);
         }
       }
     }
   }
 
-
   // Main Loop
   while (runScript) {
     // Get stocks in order of favorable forecast
-    let orderedStocks = ns.stock.getSymbols().sort(function (a, b) { return Math.abs(0.5 - ns.stock.getForecast(b)) - Math.abs(0.5 - ns.stock.getForecast(a)); })
+    let orderedStocks = ns.stock.getSymbols().sort(function (a, b) {
+      return Math.abs(0.5 - ns.stock.getForecast(b)) - Math.abs(0.5 - ns.stock.getForecast(a));
+    })
     let currentWorth = 0;
 
     ns.print("---------------------------------------");
@@ -160,7 +149,6 @@ export async function main(ns) {
       const position = ns.stock.getPosition(stock);
 
       if (position[0] > 0 || position[2] > 0) {
-
         // Check if we need to sell
         sellIfOutsideThreshdold(stock);
       }
@@ -168,7 +156,7 @@ export async function main(ns) {
       // Check if we should buy
       buyPositions(stock);
 
-      // Track out current profit over time
+      // Track our current profit over time
       if (position[0] > 0 || position[2] > 0) {
         let longShares = position[0];
         let longPrice = position[1];
@@ -176,7 +164,7 @@ export async function main(ns) {
         let shortPrice = position[3];
         let bidPrice = ns.stock.getBidPrice(stock);
 
-        // Calculate profit minus commision fees
+        // Calculate profit minus commission fees
         let profit = longShares * (bidPrice - longPrice) - (2 * 100000);
         let profitShort = shortShares * Math.abs(bidPrice - shortPrice) - (2 * 100000);
 
