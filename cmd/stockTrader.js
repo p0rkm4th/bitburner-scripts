@@ -19,7 +19,7 @@ export async function main(ns) {
 
   const runScript = true;           // For debug purposes
   const toastDuration = 0;//15000;  // Toast message duration
-  //const toastOn = false;
+  //const toastOn = false; //future addition
   const extraFormats = [1e15, 1e18, 1e21, 1e24, 1e27, 1e30];
   const extraNotations = ["q", "Q", "s", "S", "o", "n"];
   const decimalPlaces = 3;
@@ -69,34 +69,49 @@ export async function main(ns) {
     let volatilityPercent = ns.stock.getVolatility(stock);
     let playerMoney = ns.getPlayer().money;
 
-    // Look for Long Stocks to buy
-    if (forecast >= stockBuyOver_Long && volatilityPercent <= stockVolatility) {
-      if (playerMoney - moneyKeep > ns.stock.getPurchaseCost(stock, minSharePercent, "Long")) {
-        let shares = Math.min((playerMoney - moneyKeep - 100000) / askPrice, maxShares);
-        let boughtFor = ns.stock.buyStock(stock, shares);
+    const minTradeValue = 10000000; // 🔧 Minimum total trade size: $10 million
 
-        if (boughtFor > 0) {
-          let message = 'Bought ' + Math.round(shares) + ' Long shares of ' + stock + ' for ' + formatReallyBigNumber(boughtFor);
-          ns.toast(message, 'success', toastDuration);
-        }
+    // 📈 LONG POSITION LOGIC
+    if (forecast >= stockBuyOver_Long && volatilityPercent <= stockVolatility) {
+      // Check if we have enough money to consider buying
+      if (playerMoney - moneyKeep > ns.stock.getPurchaseCost(stock, minSharePercent, "Long")) {
+        // Calculate max shares we can afford within our limits
+        let maxAffordableShares = Math.min((playerMoney - moneyKeep - 100000) / askPrice, maxShares);
+        let tradeValue = maxAffordableShares * askPrice;
+
+        // 🛑 Skip if trade is too small
+        if (tradeValue >= minTradeValue) {
+          let boughtFor = ns.stock.buyStock(stock, maxAffordableShares);
+
+          if (boughtFor > 0) {
+            let message = 'Bought ' + Math.round(maxAffordableShares) + ' Long shares of ' + stock + ' for ' + formatReallyBigNumber(boughtFor);
+            ns.toast(message, 'success', toastDuration);
+          }
+        } 
       }
     }
 
-    // Look for Short Stocks to buy
+    // 📉 SHORT POSITION LOGIC
     if (shortUnlock) {
       if (forecast <= stockBuyUnder_Short && volatilityPercent <= stockVolatility) {
         if (playerMoney - moneyKeep > ns.stock.getPurchaseCost(stock, minSharePercent, "Short")) {
-          let shares = Math.min((playerMoney - moneyKeep - 100000) / askPrice, maxSharesShort);
-          let boughtFor = ns.stock.buyShort(stock, shares);
+          let maxAffordableShares = Math.min((playerMoney - moneyKeep - 100000) / askPrice, maxSharesShort);
+          let tradeValue = maxAffordableShares * askPrice;
 
-          if (boughtFor > 0) {
-            let message = 'Bought ' + Math.round(shares) + ' Short shares of ' + stock + ' for ' + formatReallyBigNumber(boughtFor);
-            ns.toast(message, 'success', toastDuration);
-          }
+          // 🛑 Skip if trade is too small
+          if (tradeValue >= minTradeValue) {
+            let boughtFor = ns.stock.buyShort(stock, maxAffordableShares);
+
+            if (boughtFor > 0) {
+              let message = 'Bought ' + Math.round(maxAffordableShares) + ' Short shares of ' + stock + ' for ' + formatReallyBigNumber(boughtFor);
+              ns.toast(message, 'success', toastDuration);
+            }
+          } 
         }
       }
     }
   }
+
 
   function sellIfOutsideThreshdold(stock) {
     let position = ns.stock.getPosition(stock);

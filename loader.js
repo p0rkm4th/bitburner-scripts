@@ -18,11 +18,11 @@ export async function main(ns) {
   const workerScript = "/worker.js";
   const meganukeScript = "/cmd/meganuke.js";
   const doorsScript = "/cmd/domBackdoor.js";
-  const upgradesScript = "/upgrade.js";
+  const upgradesScript = "/cmd/upgrade.js";
   const bmNotifyScript = "/cmd/bm-notify.js";
   const logDir = "/logs/";
   const customStats = "/cmd/custStats.js"
-  const stockTrader = "/stockTrader.js"
+  const stockTrader = "/cmd/stockTrader.js"
 
   // -------------------------
   // Target prioritization weights
@@ -52,7 +52,7 @@ export async function main(ns) {
   const forceCopy = hasFlag("--force-copy");
   const chaos = hasFlag("--chaos");
   const multi = hasFlag("--multi");
-  const doLogs = hasFlag("--logs"); // <---- NEW FLAG: enable detailed logging
+  const doLogs = hasFlag("--logs"); 
   const reservedRam = Number(getFlagArg("--reserve")) || reservedRamDefault;
   const targetArg = getFlagArg("--target");
   const multiCountArg = Number(getFlagArg("--multi")) || null;

@@ -1,18 +1,20 @@
-alias nuke  = "run /cmd/meganuke.js"
-alias net   = "run /loader.js"
-alias ka    = "killall"
-alias eyes  = "run /cmd/eyes.js"
-alias kaa   = "killall; run /cmd/killallall.j"
-alias doors = "run /cmd/doors.j"
-alias net1  = "run home /loader.j"
-alias unet  = "run /loader.js --upgrade --bm-notify"
-alias bd    = "backdoor"
-alias bl    = "buy -l"
-alias ba    = "buy -a"
-alias bm    = "run /bm-notify.j"
-alias sp    = "ServerProfiler.exe"
-alias rmall = "run /cmd/rm-all.js"
-alias ram   = "run /cmd/ram.j"
-alias bdc   = "run /cmd/bdc.j"
+alias nuke="home;cls;run /cmd/meganuke.js";
+alias net="home;cls;run /loader.js";
+alias ka="killall";
+alias eyes="home;cls;run /cmd/eyes.js";
+alias kaa="killall; run /cmd/killallall.j";
+alias unet="home;cls;run /loader.js --upgrade --bm-notify --stats";
+alias bd="backdoor";
+alias bl="buy -l";
+alias ba="buy -a";
+alias bm="home;cls;run /bm-notify.j";
+alias sp="ServerProfiler.exe";
+alias rmall="home;cls;run /cmd/rm-all.js";
+alias rmlogs="home;cls;run /cmd/rm-logs.js";
+alias ram="home;cls;run /cmd/ram.j";
+alias bdc="home;cls;run /cmd/bdc.j";
+alias fly="home;cls;run /fl1ght.exe";
+alias upd="home;cls;run /upgrade.js";
+alias bddom="home;cls;run /cmd/domBackdoor.js";
 
-alias nuke  = "run /cmd/meganuke.js"; alias net   = "run /loader.js"; alias ka    = "killall"; alias eyes  = "run /cmd/eyes.js"; alias kaa   = "killall; run /cmd/killallall.j"; alias doors = "run /cmd/doors.j"; alias net1  = "run home /loader.j"; alias unet  = "run /loader.js --upgrade --bm-notify"; alias bd    = "backdoor"; alias bl    = "buy -l"; alias ba    = "buy -a"; alias bm    = "run /bm-notify.j"; alias sp    = "ServerProfiler.exe"; alias rmall = "run /cmd/rm-all.js"; alias ram   = "run /cmd/ram.j"; alias bdc   = "run /cmd/bdc.j"
+
